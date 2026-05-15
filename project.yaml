@@ -1,0 +1,12 @@
+---
+project:
+  name: 'Builder Swarm'
+  purpose: 'Open-source agentic project launcher for competitions, hackathons, and community builders'
+  pricing:
+    - model: 'Basic'
+      price: 59
+      features:  'Core Safety Docs'
+    - model: 'Pro'
+      price: 149 + variable pilots
+      features: 'Additional Features'
+  testers: all in team

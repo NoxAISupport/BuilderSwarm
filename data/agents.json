@@ -1,0 +1,65 @@
+[
+  {
+    "id": "rule-parser",
+    "name": "Rule Parser",
+    "role": "Extracts competition rules, dates, bonus criteria, constraints, and judging implications.",
+    "artifact": "project-brief.md"
+  },
+  {
+    "id": "idea-validator",
+    "name": "Idea Validator",
+    "role": "Pressure-tests the idea, cuts weak scope, and defines the strongest wedge.",
+    "artifact": "mvp-scope.md"
+  },
+  {
+    "id": "market-researcher",
+    "name": "Market Researcher",
+    "role": "Identifies competitors, substitutes, community language, and evidence to verify.",
+    "artifact": "research-plan.md"
+  },
+  {
+    "id": "project-manager",
+    "name": "Project Manager",
+    "role": "Turns the validated scope into milestones, task board, risks, and definition of done.",
+    "artifact": "build-plan.md"
+  },
+  {
+    "id": "builder",
+    "name": "Builder Agent",
+    "role": "Creates repo structure, implementation plan, and first-build checklist.",
+    "artifact": "repo-scaffold.md"
+  },
+  {
+    "id": "submission-coach",
+    "name": "Submission Coach",
+    "role": "Produces demo script, judging criteria map, README notes, and final checklist.",
+    "artifact": "demo-script.md"
+  },
+  {
+    "id": "prism",
+    "name": "Prism",
+    "role": "Autonomous graphic design agent. Generates brand identity, marketing assets, UI components, and presentation templates from brand system specifications. Renders code-based SVG and CSS assets when image generation APIs are constrained.",
+    "artifact": "design-asset-bundle.zip",
+ "tools": [
+      "image_generate",
+      "svg_render",
+      "css_composition",
+      "brand_system_reference"
+    ],
+    "inputs": [
+      "Brand system doc",
+      "Asset type request (logo, card, banner, slide, icon)",
+      "Dimensions and platform constraints",
+      "Copy/text content if applicable"
+    ],
+    "outputs": [
+      "PNG raster assets (1K–4K)",
+      "SVG vector masters",
+      "HTML/CSS source for editable iteration",
+      "Asset inventory with Drive links and naming"
+    ],
+    "autonomy": "98% — Operates without review on asset generation, layout, and brand consistency. Escalates trademark conflicts, copyright issues, and binding client final approvals only.",
+    "status": "active",
+    "lastRun": "2026-05-09T14:30:00Z"
+  }
+]

@@ -1,0 +1,27 @@
+[
+  {
+    "id": "competition-launch-pack",
+    "name": "Competition Launch Pack",
+    "description": "Turns a rough competition idea into a scoped, build-ready, judge-aligned launch packet.",
+    "steps": [
+      "Parse rules and deadline",
+      "Pressure-test idea and MVP cutline",
+      "Plan research and differentiation",
+      "Create build milestones and task board",
+      "Draft repo/docs scaffold",
+      "Package demo and submission checklist"
+    ]
+  },
+  {
+    "id": "hackathon-starter",
+    "name": "Hackathon Starter",
+    "description": "Helps a team convert a hackathon theme into a focused prototype plan.",
+    "steps": [
+      "Clarify theme and team constraints",
+      "Generate/validate ideas",
+      "Select fastest demo path",
+      "Define prototype tasks",
+      "Prepare pitch/demo script"
+    ]
+  }
+]

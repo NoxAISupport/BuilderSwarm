@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Builder Swarm — Live Backend Demo</title>
+  <meta name="description" content="Turn a rough competition idea into a scoped, build-ready, judge-aligned launch packet — streamed live from the backend." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐝</text></svg>" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* Small live-mode additions */
+    .live-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #f43f5e, #e11d48);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      padding: 4px 10px;
+      border-radius: 999px;
+      margin-left: 10px;
+      vertical-align: middle;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: .7; }
+    }
+    .mode-nav {
+      display: flex;
+      gap: 12px;
+      padding: 12px 32px 0;
+      font-size: 13px;
+    }
+    .mode-nav a {
+      color: var(--muted);
+      text-decoration: none;
+      padding: 6px 0;
+      border-bottom: 2px solid transparent;
+    }
+    .mode-nav a.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+      font-weight: 600;
+    }
+    .mode-nav a:hover {
+      color: var(--text);
+    }
+  </style>
+</head>
+<body>
+  <div class="mode-nav">
+    <a href="index.html">Static Demo</a>
+    <a href="live-demo.html" class="active">Live Backend<span class="live-badge">Live</span></a>
+  </div>
+
+  <header class="hero">
+    <div>
+      <p class="eyebrow">SSTB Agentic AI Competition Prototype — Level B</p>
+      <h1>Builder Swarm <span style="font-size:.45em;color:var(--muted)">Live</span></h1>
+      <p class="tagline">Turn a rough competition idea into a scoped, build-ready, judge-aligned launch packet — streamed live from the backend.</p>
+    </div>
+    <button id="runDemo" class="primary">Run Builder Swarm</button>
+  </header>
+
+  <main class="layout">
+    <section class="panel brief-panel">
+      <h2>Competition Brief</h2>
+      <label>Competition<input id="competition" value="SSTB Agentic AI Competition" /></label>
+      <label>Deadline<input id="deadline" value="May 29, 2026" /></label>
+      <label>Rules<textarea id="rules">Project does not need to be an app or service. AI must be used to research, plan, and/or build. Bonus points for open sourcing and teaming up with the community.</textarea></label>
+      <label>Idea<textarea id="idea">Builder Swarm: an open-source agentic project launcher for competitions, hackathons, and community builders.</textarea></label>
+      <label>Biggest Concern<input id="concern" value="It has to be easy to use and innovative." /></label>
+      <div class="note">
+        <strong>Live mode:</strong> The backend streams agent thoughts and artifacts in real time using NDJSON. No external LLM calls — content is sample-based with keyword substitution.
+      </div>
+    </section>
+
+    <section class="panel swarm-panel">
+      <h2>Swarm Workflow</h2>
+      <div id="workflow" class="timeline"></div>
+      <h3>Agents</h3>
+      <div id="agents" class="agent-grid"></div>
+    </section>
+
+    <section class="panel artifact-panel">
+      <div class="artifact-header">
+        <h2>Launch Packet</h2>
+        <div class="actions">
+          <button id="copyArtifact">Copy</button>
+          <button id="downloadArtifact">Download</button>
+        </div>
+      </div>
+      <div id="tabs" class="tabs"></div>
+      <pre id="artifact" class="artifact">Click “Run Builder Swarm” to generate the launch packet. The backend will stream each agent’s output as it is "produced."</pre>
+    </section>
+  </main>
+
+  <footer>
+    <strong>Agentic angle:</strong> visible specialist roles create separate artifacts that combine into a competition-ready project package.
+    <br />
+    <span style="opacity:.7">Backend: <code>/api/swarm/run</code> · NDJSON streaming · template-based generation</span>
+  </footer>
+
+  <script src="js/live-api-client.js"></script>
+</body>
+</html>
