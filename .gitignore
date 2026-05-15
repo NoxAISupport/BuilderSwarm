@@ -1,5 +1,35 @@
+# --- OS / Editor ---
 .DS_Store
+Thumbs.db
+desktop.ini
 node_modules/
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# --- Secrets / Config ---
 .env
 .env.*
+!.env.example
+secrets.json
+credentials.json
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+ENV/
+env/
+
+# --- Logs / Temp ---
 *.log
+*.tmp
+temp/
+tmp/

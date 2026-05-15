@@ -34,11 +34,34 @@ No build step, account, database, or API key is required for the static demo.
 
 ### Live Backend Demo
 
+**macOS / Linux:**
+
 ```bash
 cd BuilderSwarm
-python3 -m venv .venv && source .venv/bin/activate
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 python3 server.py
+```
+
+**Windows (PowerShell):**
+
+```powershell
+cd BuilderSwarm
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python server.py
+```
+
+**Windows (Command Prompt):**
+
+```cmd
+cd BuilderSwarm
+python -m venv .venv
+.venv\Scripts\activate.bat
+pip install -r requirements.txt
+python server.py
 ```
 
 Open:
@@ -46,6 +69,8 @@ Open:
 ```text
 http://localhost:5173/app/live-demo.html
 ```
+
+> No build step, database, API key, or account is required. Runs entirely offline.
 
 The live backend streams agent events in real time. It is template-based with keyword substitution — no external LLM calls, $0 cost.
 
