@@ -154,6 +154,7 @@
       rules: $('rules').value,
       idea: $('idea').value,
       concern: $('concern').value,
+      api_key: $('apiKey') ? $('apiKey').value : '',
     };
 
     try {

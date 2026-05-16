@@ -66,9 +66,8 @@ python server.py
 
 Open: `http://localhost:5173/app/live-demo.html`
 
-> No build step, database, API key, or account is required. Runs entirely offline.
-
-The live backend streams agent events in real time. It is template-based with keyword substitution — no external LLM calls, $0 cost.
+> **Demo mode:** No API key needed — runs offline with template-based keyword substitution.  
+> **LLM mode:** Paste your OpenAI API key in the UI for real AI-generated artifacts (requires internet + credits).
 
 ## Current MVP
 

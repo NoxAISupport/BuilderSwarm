@@ -18,6 +18,13 @@ from pathlib import Path
 from flask import Flask, request, Response, send_from_directory
 from flask_cors import CORS
 
+# Optional OpenAI import — graceful fallback if not installed
+try:
+    from openai import OpenAI
+    HAS_OPENAI = True
+except ImportError:
+    HAS_OPENAI = False
+
 # ---------------------------------------------------------------------------
 # Config
 # ---------------------------------------------------------------------------
@@ -137,6 +144,182 @@ def chunks_of(text: str, size: int = 80):
 # Streaming generator
 # ---------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------
+# LLM-powered generation (user-provided API key)
+# ---------------------------------------------------------------------------
+
+AGENT_PROMPTS = {
+    "project-brief.md": """You are a Competition Rule Parser.
+Given a competition brief, extract and structure:
+- Competition name and deadline
+- Key rules and constraints
+- Judging criteria
+- Bonus opportunities
+
+Output ONLY a clean Markdown document titled "Project Brief".
+""",
+    "mvp-scope.md": """You are an Idea Validator.
+Given a competition idea, pressure-test it and recommend:
+- The strongest MVP cutline (what MUST be built)
+- What to defer or cut
+- Weak assumptions to validate
+- Differentiation angle
+
+Output ONLY a clean Markdown document titled "MVP Scope".
+""",
+    "research-plan.md": """You are a Market Researcher.
+Given a project idea, create a research plan covering:
+- Competitors and substitutes
+- Community language and positioning
+- Evidence to verify before building
+- Risks and mitigations
+
+Output ONLY a clean Markdown document titled "Research Plan".
+""",
+    "build-plan.md": """You are a Project Manager.
+Given a validated scope, create a build plan with:
+- Milestones and deadlines
+- Task breakdown
+- Risk register
+- Definition of done for each phase
+
+Output ONLY a clean Markdown document titled "Build Plan".
+""",
+    "repo-scaffold.md": """You are a Builder Agent.
+Given a project plan, create a repo scaffold with:
+- Recommended folder structure
+- Key files and templates
+- Implementation notes
+- First-build checklist
+
+Output ONLY a clean Markdown document titled "Repo Scaffold".
+""",
+    "demo-script.md": """You are a Pitch Agent.
+Given a project, write a demo script with:
+- Opening hook
+- Walkthrough script (2-3 minutes)
+- Key talking points
+- Closing call-to-action
+
+Output ONLY a clean Markdown document titled "Demo Script".
+""",
+}
+
+
+def build_agent_prompt(agent, kw, artifact_file):
+    """Build a prompt for a specific agent given the user's brief."""
+    system_prompt = AGENT_PROMPTS.get(artifact_file, "You are a helpful AI assistant. Output Markdown only.")
+    user_prompt = f"""## Competition Brief
+
+- **Competition:** {kw['competition']}
+- **Deadline:** {kw['deadline']}
+- **Rules:** {kw['rules']}
+- **Idea:** {kw['idea']}
+- **Biggest Concern:** {kw['concern']}
+
+## Your Role
+{agent['role']}
+
+## Task
+Produce the artifact: {artifact_file}
+"""
+    return system_prompt, user_prompt
+
+
+def run_swarm_stream_llm(payload: dict):
+    """Generate NDJSON events using a real LLM via user-provided API key."""
+    api_key = payload.get("api_key", "").strip()
+    if not api_key:
+        yield json.dumps({"type": "error", "message": "No API key provided."}) + "\n"
+        return
+
+    if not HAS_OPENAI:
+        yield json.dumps({"type": "error", "message": "OpenAI package not installed. Run: pip install openai"}) + "\n"
+        return
+
+    kw = extract_keywords(payload)
+    workflow = WORKFLOWS[0]
+    steps = workflow["steps"]
+    agents = [a for a in AGENTS[:6]]
+
+    try:
+        client = OpenAI(api_key=api_key)
+    except Exception as e:
+        yield json.dumps({"type": "error", "message": f"Invalid API key or connection error: {e}"}) + "\n"
+        return
+
+    event = lambda **kwargs: json.dumps(kwargs) + "\n"
+
+    yield event(
+        type="system",
+        message=f"Swarm initialized for '{kw['project_name']}' (LLM mode)",
+        competition=kw["competition"],
+        total_steps=len(steps),
+    )
+    time.sleep(0.15)
+
+    for idx, (step_name, agent) in enumerate(zip(steps, agents)):
+        artifact_file = agent.get("artifact", "")
+
+        yield event(
+            type="stage_start",
+            step_index=idx,
+            step_name=step_name,
+            agent_id=agent["id"],
+            agent_name=agent["name"],
+            agent_role=agent["role"],
+            artifact=artifact_file,
+        )
+        time.sleep(0.2)
+
+        # Thinking thoughts
+        for t in [
+            f"{agent['name']} analyzing brief...",
+            f"{agent['name']} evaluating constraints...",
+            f"{agent['name']} drafting {artifact_file}...",
+        ]:
+            yield event(type="thought", text=t, agent_id=agent["id"])
+            time.sleep(0.2)
+
+        yield event(type="artifact_start", artifact=artifact_file, agent_id=agent["id"])
+
+        # Call LLM
+        system_prompt, user_prompt = build_agent_prompt(agent, kw, artifact_file)
+        full_text = ""
+        try:
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
+                ],
+                temperature=0.7,
+                max_tokens=1500,
+            )
+            full_text = response.choices[0].message.content
+        except Exception as e:
+            full_text = f"# Error generating {artifact_file}\n\n{e}"
+
+        # Stream chunks
+        for chunk in chunks_of(full_text, 120):
+            yield event(type="artifact_chunk", artifact=artifact_file, chunk=chunk, agent_id=agent["id"])
+            time.sleep(0.03)
+
+        yield event(type="artifact_done", artifact=artifact_file, full_text=full_text, agent_id=agent["id"])
+        time.sleep(0.2)
+
+        yield event(
+            type="stage_done", step_index=idx, step_name=step_name, agent_id=agent["id"]
+        )
+        time.sleep(0.25)
+
+    yield event(type="done", message="Launch packet ready.", artifacts=list(ARTIFACT_MAP.keys()))
+
+
+# ---------------------------------------------------------------------------
+# Streaming generator (legacy / no API key)
+# ---------------------------------------------------------------------------
+
 def run_swarm_stream(payload: dict):
     """Generate NDJSON events for the swarm simulation."""
     kw = extract_keywords(payload)
@@ -236,11 +419,20 @@ def api_swarm_run():
     """POST /api/swarm/run
 
     Accepts JSON body with keys:
-        competition, deadline, rules, idea, concern
+        competition, deadline, rules, idea, concern, api_key (optional)
+
+    If api_key is provided, uses real LLM generation (gpt-4o-mini).
+    Otherwise falls back to keyword-substituted sample content.
 
     Returns NDJSON stream of agent events.
     """
     payload = request.get_json(force=True, silent=True) or {}
+    if payload.get("api_key", "").strip():
+        return Response(
+            run_swarm_stream_llm(payload),
+            mimetype="application/x-ndjson",
+            headers={"X-Accel-Buffering": "no"},
+        )
     return Response(
         run_swarm_stream(payload),
         mimetype="application/x-ndjson",

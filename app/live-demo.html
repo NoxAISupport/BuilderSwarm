@@ -72,8 +72,11 @@
       <label>Rules<textarea id="rules">Project does not need to be an app or service. AI must be used to research, plan, and/or build. Bonus points for open sourcing and teaming up with the community.</textarea></label>
       <label>Idea<textarea id="idea">Builder Swarm: an open-source agentic project launcher for competitions, hackathons, and community builders.</textarea></label>
       <label>Biggest Concern<input id="concern" value="It has to be easy to use and innovative." /></label>
+      <label style="margin-top:12px">OpenAI API Key (optional)
+        <input id="apiKey" type="password" placeholder="sk-... — leave blank for demo mode" style="font-family:monospace;font-size:12px" />
+      </label>
       <div class="note">
-        <strong>Live mode:</strong> The backend streams agent thoughts and artifacts in real time using NDJSON. No external LLM calls — content is sample-based with keyword substitution.
+        <strong>Demo mode:</strong> Uses sample content with keyword substitution. <strong>LLM mode:</strong> Provide your OpenAI API key for real AI-generated artifacts.
       </div>
     </section>
 
