@@ -20,23 +20,21 @@ A lot of builders have ideas but lose momentum between “interesting concept”
 ### Static Demo (no backend)
 
 ```bash
+git clone https://github.com/NoxAISupport/BuilderSwarm.git
 cd BuilderSwarm
 python3 -m http.server 5173
 ```
 
-Open:
+Open: `http://localhost:5173/app/index.html`
 
-```text
-http://localhost:5173/app/
-```
-
-No build step, account, database, or API key is required for the static demo.
+> Make sure the server is started **inside** the `BuilderSwarm` folder, or you will get a 404.
 
 ### Live Backend Demo
 
 **macOS / Linux:**
 
 ```bash
+git clone https://github.com/NoxAISupport/BuilderSwarm.git
 cd BuilderSwarm
 python3 -m venv .venv
 source .venv/bin/activate
@@ -47,6 +45,7 @@ python3 server.py
 **Windows (PowerShell):**
 
 ```powershell
+git clone https://github.com/NoxAISupport/BuilderSwarm.git
 cd BuilderSwarm
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
@@ -57,6 +56,7 @@ python server.py
 **Windows (Command Prompt):**
 
 ```cmd
+git clone https://github.com/NoxAISupport/BuilderSwarm.git
 cd BuilderSwarm
 python -m venv .venv
 .venv\Scripts\activate.bat
@@ -64,11 +64,7 @@ pip install -r requirements.txt
 python server.py
 ```
 
-Open:
-
-```text
-http://localhost:5173/app/live-demo.html
-```
+Open: `http://localhost:5173/app/live-demo.html`
 
 > No build step, database, API key, or account is required. Runs entirely offline.
 
